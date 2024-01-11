@@ -8,33 +8,33 @@ type Node struct {
 }
 
 type LinkedList struct {
-	head Node
+	head *Node
 }
 
 func (ll *LinkedList) Add(node Node) {
-	ll.addHelper(&ll.head, &node)
+	ll.addHelper(&ll.head, node)
 }
 
-func (ll *LinkedList) addHelper(current *Node, node *Node) {
+func (ll *LinkedList) addHelper(current **Node, node Node) {
 
 	if *current == nil {
 
-		*current = *node
+		*current = &node
 
 		return
 	}
 
-}
+	ll.addHelper(&(*current).Next, node)
 
-//ll.addHelper(&(*current).Next, node)
+}
 
 func (ll *LinkedList) PrintAll() {
 
-	PrintAllHelper(ll.head)
+	printAllHelper(ll.head)
 
 }
 
-func PrintAllHelper(node *Node) {
+func printAllHelper(node *Node) {
 
 	if node == nil {
 		return
@@ -42,6 +42,26 @@ func PrintAllHelper(node *Node) {
 
 	fmt.Println(node.Data)
 
-	PrintAllHelper(node.Next)
+	printAllHelper(node.Next)
+
+}
+
+func (ll *LinkedList) SumEven() int {
+
+	return sumEvenHelper(&ll.head)
+
+}
+
+func sumEvenHelper(node **Node) int {
+
+	if *node == nil {
+		return 0
+	}
+
+	if (*node).Data%2 == 0 {
+		return sumEvenHelper(&(*node).Next) + 1
+	} else {
+		return sumEvenHelper(&(*node).Next) + 0
+	}
 
 }
