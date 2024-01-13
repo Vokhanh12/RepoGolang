@@ -2,73 +2,51 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"sync"
 	"time"
 )
 
 // "github.com/vokhanh12/DataStructures"
 
-const (
-	numberOfURLs    = 100
-	numberOfWorkers = 5
-)
+func factorial(ch chan int, quit chan int) int {
 
-func crawlURL(queue <-chan int, name string) {
-	for v := range queue {
-		fmt.Printf("Worker %s is crawling URL %d\n", name, v)
-		time.Sleep(time.Second)
-	}
+	counter := 1
 
-	fmt.Printf("Worker %s done and exit\n", name)
-}
+	result := 1
 
-func startQueue() <-chan int {
-	queue := make(chan int, 10)
+	for {
 
-	go func() {
-		for i := 1; i <= numberOfURLs; i++ {
-			queue <- i
-			fmt.Printf("URL %d has been enqueued\n", i)
+		select {
+
+		case ch <- counter:
+			result *= counter
+			counter++
+		case <-quit:
+			fmt.Println("quit")
+			return result
+
 		}
 
-		close(queue)
-	}()
+	}
 
-	return queue
 }
 
 func main() {
-	queue := startQueue()
-
-	for i := 1; i <= numberOfWorkers; i++ {
-		go crawlURL(queue, fmt.Sprintf("%d", i))
+	var wg sync.WaitGroup
+	// Tạo mảng ngẫu nhiên lớn hơn
+	arrSize := 100
+	arr := make([]int, arrSize)
+	for i := range arr {
+		arr[i] = rand.Intn(100)
 	}
 
-	time.Sleep(time.Minute * 5)
-}
+	fmt.Println("Mảng trước sắp xếp (mảng lớn hơn):", arr)
 
-func test(numDBs int) {
-	dbChan := getDatabaseChanels(numDBs)
-	fmt.Println("Waiting for database", numDBs)
-	waitForDbs(numDBs, dbChan)
-	fmt.Println("All database all online!")
-}
+	wg.Wait()
 
-func waitForDbs(numDbs int, dbchan chan struct{}) {
-	for i := 0; i < numDbs; i++ {
-		<-dbchan
-	}
-}
+	fmt.Println("Mảng sau sắp xếp:", arr)
 
-func getDatabaseChanels(numDBs int) chan struct{} {
-	ch := make(chan struct{})
+	time.Sleep(time.Second * 5)
 
-	go func() {
-		for i := 0; i < numDBs; i++ {
-
-			ch <- struct{}{}
-			fmt.Println("database %v is online", i+1)
-		}
-	}()
-
-	return ch
 }
