@@ -1,24 +1,16 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
-
-// "github.com/vokhanh12/DataStructures"
+import "fmt"
 
 func main() {
 
-	var c = make(chan int, 4)
+	arr := []int{8, 2, 5, 3, 9, 4, 7, 6, 1}
 
-	go func() { fmt.Printf("got %d\n", <-c) }()
+	quickSort_1(arr, 0, len(arr)-1)
 
-	c <- 1
-	c <- 2
-	c <- 3
-	c <- 4
-	c <- 4
+	for _, value := range arr {
 
-	time.Sleep(time.Second)
+		fmt.Println(value)
 
+	}
 }
